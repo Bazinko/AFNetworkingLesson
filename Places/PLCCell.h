@@ -7,9 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PLCPlace.h"
 
 @interface PLCCell : UITableViewCell
 @property (weak, nonatomic) IBOutlet UIImageView *placeImage;
 @property (weak, nonatomic) IBOutlet UILabel *placeNameLabel;
-
+- (void)updateCellWithModel:(PLCPlace *)model;
 @end

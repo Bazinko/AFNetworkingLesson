@@ -16,6 +16,7 @@
 
 
 @property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) NSArray *items;
 @property (nonatomic, strong) PLCGoogleMapService *mapService;
 
@@ -28,6 +29,8 @@
     [super viewDidLoad];
     
     self.searchBar.delegate = self;
+    self.tableView.estimatedRowHeight = 88.0;
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.mapService = [[PLCGoogleMapService alloc] init];
 }
 
@@ -59,16 +62,23 @@
     }];
 }
 
-- (void)loadImageForPlace:(PLCPlace *)place {
-    if (place.imageURL) {
-        [self.mapService getPlaceImageWithReference:place.imageURL success:^(UIImage *image) {
-            place.image = image;
-            [self.tableView reloadData];
-        } failure:^(NSError *error) {
-            [self showAlertView:error.localizedDescription];
-        }];
-    }
+-(void)fetchResultsWithString:(NSString*)str{
+    [MBProgressHUD showHUDAddedTo:self.tableView animated:YES];
+    [[PLCGoogleMapService sharedInstance] getPlacesBySearchingWithText:str success:^(NSArray *arr) {
+        [MBProgressHUD hideHUDForView:self.tableView animated:YES];
+        _items = arr;
+        [self.tableView reloadData];
+    } failure:^(NSError *err) {
+        [MBProgressHUD hideHUDForView:self.tableView animated:YES];
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Error" message:[err localizedDescription] preferredStyle:UIAlertControllerStyleAlert];
+        [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+        [self presentViewController:alertController
+                           animated:YES completion:nil];
+    }];
+    
 }
+
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
@@ -81,14 +91,9 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     PLCCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"Cell"];
     
-    PLCPlace *place = self.items[indexPath.row];
-    cell.placeNameLabel.text = place.name;
+    PLCPlace *model = [self.items objectAtIndex:indexPath.row];
     
-    if (!place.image) {
-        [self loadImageForPlace:place];
-    } else {
-        cell.placeImage.image = place.image;
-    }
+    [cell updateCellWithModel:model];
     
     return cell;
 }

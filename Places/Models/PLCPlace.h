@@ -8,12 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-@class UIImage;
 
 @interface PLCPlace : NSObject
 
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString *imageURL;
-@property (nonatomic, strong) UIImage *image;
 
 @end

@@ -14,6 +14,10 @@ typedef void(^PLCFailureBlock)(NSError *);
 
 @interface PLCGoogleMapService : NSObject
 
++(PLCGoogleMapService *)sharedInstance;
++ (void)resetSharedInstance;
+-(NSString*)getAPIkey;
+
 - (void)getPlacesBySearchingWithText:(NSString *)text
                              success:(PLCSuccessBlock)successBlock
                              failure:(PLCFailureBlock)failure;

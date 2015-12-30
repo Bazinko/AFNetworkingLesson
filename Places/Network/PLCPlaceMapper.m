@@ -8,6 +8,7 @@
 
 #import "PLCPlaceMapper.h"
 #import "PLCPlace.h"
+#import "PLCGoogleMapService.h"
 
 @implementation PLCPlaceMapper
 
@@ -25,7 +26,9 @@
     }
     
     NSDictionary *photo = photos.firstObject;
-    result.imageURL = photo[@"phote_reference"];
+    NSString *imgUrl = [NSString stringWithFormat:@"https://maps.googleapis.com/maps/api/place/photo?maxheight=88&photoreference=%@&key=%@",photo[@"photo_reference"],[PLCGoogleMapService sharedInstance].getAPIkey];
+    
+    result.imageURL = imgUrl;
     
 
     return result;
